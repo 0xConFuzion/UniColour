@@ -92,7 +92,10 @@ def init():
 
 
 
-def picproc(imname):
+def picproc():
+    global pix
+    global f
+    global width, height
     im = Image.open('test.jpg')
     # Get width and height as int
     width, height = im.size
@@ -128,6 +131,6 @@ if os.path.exists('uni.colour') != True:
 
 
 init()
-
+picproc()
 
 print('all done')
