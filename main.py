@@ -159,13 +159,6 @@ def database_init():
 
     print('Database Finished.')
 
-def readertwo(r_height):
-    ic = 1
-    width = 256
-    while ic != width:
-        g.write(str(pix1.getpixel(c, r_height)))
-        ic += 1
-
 def picproc():
     global pix
     global f
@@ -195,12 +188,6 @@ def readerro(r_height):
 if os.path.exists('uni.colour') != True:
     print('DB doest not exist. Please initialize.')
     init()
-
-
-
-
-
-
 
 
 #init()
