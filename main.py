@@ -124,26 +124,44 @@ def picproc(file):
     print(im.format, im.mode)
     maxpix = height * width
     matchcount = 0
+    pixcount = 0
+    old = (0, 0, 0)
     for x in range(height):
         for y in range(width):
             coordinate = x, y
-            print(str(coordinate))
+#            print(str(coordinate))
             bw1 = im.getpixel(coordinate)
-            with open('data.txt', 'r') as g:
-                lines = g.readlines()
-                for line in lines:
-                    if re.search(str(bw1), line):
-                        bw, rgb = line.split(' : ')
-                        rgb = rgb.replace('(', '')
-                        rgb = rgb.replace(')', '')
-                        rgbt = tuple(map(int, rgb.split(', ')))
-                        matchcount +=1
+            if bw1 != old:
+                if bw1 != (255, 255, 255) or (0, 0, 0):
+                    with open('data.txt', 'r') as g:
+                        lines = g.readlines()
+                        for line in lines:
+                            if re.search(str(bw1), line):
+                                bw, rgb = line.split(' : ')
+                                rgb = rgb.replace('(', '')
+                                rgb = rgb.replace(')', '')
+                                rgbt = tuple(map(int, rgb.split(', ')))
+                                matchcount +=1
+                                print('Found match')
+                            else:
+                                rgbt = bw1
 
-                    else:
-                        rgbt = bw1
+                elif bw1 == (255, 255, 255):
+                    rgbt = 255, 255, 255
 
+                elif bw1 == (0, 0, 0):
+                    rgbt = (0, 0, 0)
 
+                else:
+                    print('Something is going wrong.')
+            else:
+                print('Duplicate detected. Using Old Value.')
             im2.putpixel(coordinate, rgbt)
+            old = im.getpixel(coordinate)
+            pixcount += 1
+            done = pixcount / maxpix
+            prog = round(done * 100, 2)
+            print('Progress : ' + str(prog) + '%')
     savef, extf = filename.split('.')
     im2.save(savef + '.jpg')
     im2.close()
