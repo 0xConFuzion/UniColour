@@ -1,8 +1,7 @@
 from PIL import Image
 import os
-
-wig = (255, 255, 255)
-bigg = (0, 0, 0)
+import re
+import time
 
 def init():
     r = 0
@@ -15,12 +14,10 @@ def init():
     line = 0
 
     inimg = Image.new('RGB', (255, 6))
-    print('1')
+    print('Creating data image set.')
     while r != max:
-        print('2')
         inimg.putpixel((ct, line), (r, g, b))
         ct += 1
-        print(str(ct))
         r +=1
 
     line += 1
@@ -31,7 +28,6 @@ def init():
         inimg.putpixel((ct, line), (r, g, b))
         ct += 1
         g +=1
-        print('4')
 
     line += 1
     ct = 1
@@ -41,7 +37,6 @@ def init():
         inimg.putpixel((ct, line), (r, g, b))
         ct += 1
         b +=1
-        print('5')
 
     line += 1
     ct = 1
@@ -52,7 +47,6 @@ def init():
         ct += 1
         r +=1
         g += 1
-        print('6')
 
     line += 1
     ct = 1
@@ -64,7 +58,6 @@ def init():
         ct += 1
         g += 1
         b += 1
-        print('7')
 
     line += 1
     ct = 1
@@ -76,7 +69,6 @@ def init():
         ct += 1
         r += 1
         b += 1
-        print('6')
 
     line += 1
     ct = 1
@@ -88,9 +80,12 @@ def init():
     img = Image.open('init.jpg').convert('LA')
     img.save('initbw.png')
     img.close()
+    print('Converting to black and white.')
     img = Image.open('initbw.png').convert('RGB')
     img.save('initbw.jpg')
     img.close
+    print('Images created.')
+    database_init()
 
 
 def database_init():
@@ -112,51 +107,56 @@ def database_init():
             bwread = im1.getpixel(coordinate)
             if bwread != bwreadold:
                 g.write(str(im1.getpixel(coordinate)) + ' : ' + str(im2.getpixel(coordinate)) + '\n')
-                print(str(ic))
             bwreadold = im1.getpixel(coordinate)
             ic += 1
-        #readertwo(hc)
         hc +=1
         ic = 0
-        print(str(hc))
 
     g.close
-
     print('Database Finished.')
 
-def picproc():
-    global pix
-    global f
-    global width, height
-    im = Image.open('test.jpg')
-    # Get width and height as int
-    width, height = im.size
+def picproc(file):
+    tic = time.perf_counter()
+    im = Image.open(file)
+    height, width = im.size
+    im2 = Image.new(mode="RGB", size=(height, width))
     print(width, height)
     print(im.format, im.mode)
-    pix = im.load
-    f = open('test.txt', 'w+')
-    ct = 0
-    while ct != height:
-        readerro(ct)
-        f.write(str(ct) and '\n')
-        ct += 1
+    maxpix = height * width
+    matchcount = 0
+    for x in range(height):
+        for y in range(width):
+            coordinate = x, y
+            print(str(coordinate))
+            bw1 = im.getpixel(coordinate)
+            with open('data.txt', 'r') as g:
+                lines = g.readlines()
+                for line in lines:
+                    if re.search(str(bw1), line):
+                        bw, rgb = line.split(' : ')
+                        rgb = rgb.replace('(', '')
+                        rgb = rgb.replace(')', '')
+                        rgbt = tuple(map(int, rgb.split(', ')))
+                        matchcount +=1
 
-    f.close()
+                    else:
+                        rgbt = bw1
 
 
-def readerro(r_height):
-    ic = 0
-    while ic != width:
-        f.write(str(pix[ic, r_height]))
-        ic += 1
+            im2.putpixel(coordinate, rgbt)
+    savef, extf = filename.split('.')
+    im2.save(savef + '.jpg')
+    im2.close()
+    toc = time.perf_counter()
+    print('Found ' + str(matchcount) + ' out of ' + str(maxpix) + ' pixel matches...')
+    print(f' in {toc - tic:0.4f} seconds')
 
-if os.path.exists('uni.colour') != True:
-    print('DB doest not exist. Please initialize.')
+if os.path.exists('data.txt') != True:
+    print('DB doest not exist. Creating files... Please wait.')
     init()
 
+print('Enter File name : ')
+filename = input()
 
-#init()
-database_init()
-#picproc()
+picproc(filename)
 
-print('all done')
