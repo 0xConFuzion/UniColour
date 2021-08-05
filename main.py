@@ -82,43 +82,7 @@ def init():
     ct = 1
     b = 0
     r = 0
-    ''' These colors might not be needed. set height to 11 else 6
-    while r != max:
-        inimg.putpixel((ct, line), (r, 255, b))
-        ct += 1
-        r += 1
-        #b += 1
-        print('9')
 
-    line += 1
-    ct = 1
-    b = 0
-    r = 0
-
-    while g != max:
-        inimg.putpixel((ct, line), (255, g, b))
-        ct += 1
-        g += 1
-        #b += 1
-        print('10')
-
-    line += 1
-    ct = 1
-    b = 0
-    g = 0
-
-    while r != max:
-        inimg.putpixel((ct, line), (r, g, 255))
-        ct += 1
-        r += 1
-       # g += 1
-        print('11')
-
-    line += 1
-    ct = 1
-    b = 0
-    g = 0
-    '''
     inimg.save('init.jpg')
     inimg.close
     img = Image.open('init.jpg').convert('LA')
@@ -136,24 +100,25 @@ def database_init():
     height = 5
     ic = 0
     hc = 0
+    bwread = 0, 0, 0
+    bwreadold = 0, 0, 0
     print('Creating Database file')
     g = open('data.txt', 'w+')
     print('Loading Images...')
     print('populating database file...')
     while hc != height:
-        print('.')
-        print(str(ic))
-        print(str(hc))
         while ic != width:
             coordinate = ic, hc
-            print(str(coordinate))
-            g.write(str(im1.getpixel(coordinate)) + ' : ' + str(im2.getpixel(coordinate)) + '\n')
+            bwread = im1.getpixel(coordinate)
+            if bwread != bwreadold:
+                g.write(str(im1.getpixel(coordinate)) + ' : ' + str(im2.getpixel(coordinate)) + '\n')
+                print(str(ic))
+            bwreadold = im1.getpixel(coordinate)
             ic += 1
         #readertwo(hc)
         hc +=1
         ic = 0
         print(str(hc))
-        print('...')
 
     g.close
 
@@ -170,7 +135,7 @@ def picproc():
     print(im.format, im.mode)
     pix = im.load
     f = open('test.txt', 'w+')
-    ct = 1
+    ct = 0
     while ct != height:
         readerro(ct)
         f.write(str(ct) and '\n')
@@ -180,7 +145,7 @@ def picproc():
 
 
 def readerro(r_height):
-    ic = 1
+    ic = 0
     while ic != width:
         f.write(str(pix[ic, r_height]))
         ic += 1
